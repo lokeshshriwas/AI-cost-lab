@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # No API key and no COSTLAB_ALLOW_PAID here: CI must never spend credit.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -q
+      - name: No API keys committed
+        run: |
+          if git grep -nE "sk-ant-[A-Za-z0-9_-]{10,}" -- ':!.github/'; then
+            echo "Possible API key found in the repo"; exit 1
+          fi
