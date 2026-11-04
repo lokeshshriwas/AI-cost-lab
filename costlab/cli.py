@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ from costlab.client import CacheMiss, ModelClient, PaidCallNotAllowed
 from costlab.estimate import estimate, format_estimates
 from costlab.models import load_tasks, summarize, tasks_hash
 from costlab.pricing import PriceTable
-from costlab.report import build_comparison, build_table
+from costlab.report import build_comparison, build_table, comparison_rows, table_rows
 from costlab.results_report import write_report
 from costlab.runner import BudgetExceeded, run_batch, run_strategy
 from costlab.spend import format_ledger, ledger
@@ -95,15 +96,25 @@ def cmd_run(args) -> int:
     return 0
 
 
+def _print_json(value) -> None:
+    print(json.dumps(value, indent=2))
+
+
 def cmd_table(args) -> int:
     with ResultStore(args.db) as store:
-        print(build_table(store, PriceTable.load()))
+        if args.json:
+            _print_json(table_rows(store, PriceTable.load()))
+        else:
+            print(build_table(store, PriceTable.load()))
     return 0
 
 
 def cmd_compare(args) -> int:
     with ResultStore(args.db) as store:
-        print(build_comparison(store, PriceTable.load()))
+        if args.json:
+            _print_json(comparison_rows(store, PriceTable.load()))
+        else:
+            print(build_comparison(store, PriceTable.load()))
     return 0
 
 
@@ -135,14 +146,52 @@ def cmd_estimate(args) -> int:
         print("add --offline for an approximate estimate without the API.", file=sys.stderr)
         return 2
     if args.json:
-        print(json.dumps([e.as_dict() for e in results], indent=2))
+        _print_json([e.as_dict() for e in results])
     else:
         print(format_estimates(results))
     return 0
 
 
+def replay_argv(workload: str, strategy: str, model: str) -> list[str]:
+    """The `run` arguments that replay a saved run, from its stored strategy name
+    ("<strategy>[+batch][@<repeat tag>]")."""
+    name, _, tag = strategy.partition("@")
+    argv = ["run", workload, "--model", model, "--mode", "replay"]
+    if name.endswith("+batch"):
+        name = name.removesuffix("+batch")
+        argv.append("--batch")
+    argv += ["--strategy", name]
+    if tag:
+        argv += ["--repeat-tag", tag]
+    return argv
+
+
+def cmd_rebuild(args) -> int:
+    """Replay every run in results/runs.json from the committed cache: no API key, no cost."""
+    manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
+    with ResultStore(args.db) as store:
+        if store.latest_runs():
+            print(
+                f"stopped: {args.db} already has runs; rebuild into a new file with --db",
+                file=sys.stderr,
+            )
+            return 2
+    failed = 0
+    for run in manifest:
+        argv = replay_argv(run["workload"], run["strategy"], run["model"])
+        if main([*argv, "--db", args.db]) != 0:
+            failed += 1
+            print(f"  could not replay {run['workload']} / {run['strategy']} / {run['model']}")
+    print(f"rebuilt {len(manifest) - failed} of {len(manifest)} runs into {args.db}")
+    return 0 if failed == 0 else 1
+
+
 def cmd_spend(args) -> int:
-    print(format_ledger(ledger(PriceTable.load(), args.cache, since=args.since)))
+    lines = ledger(PriceTable.load(), args.cache, since=args.since)
+    if args.json:
+        _print_json([asdict(line) for line in lines])
+    else:
+        print(format_ledger(lines))
     return 0
 
 
@@ -190,16 +239,25 @@ def main(argv: list[str] | None = None) -> int:
 
     table = sub.add_parser("table", help="print the latest run per workload, strategy and model")
     table.add_argument("--db", default=str(DEFAULT_DB))
+    table.add_argument("--json", action="store_true", help="machine-readable output")
     table.set_defaults(func=cmd_table)
 
     compare = sub.add_parser("compare", help="each strategy against the baseline, per workload")
     compare.add_argument("--db", default=str(DEFAULT_DB))
+    compare.add_argument("--json", action="store_true", help="machine-readable output")
     compare.set_defaults(func=cmd_compare)
 
     report = sub.add_parser("report", help="write results/RESULTS.md and charts from SQLite")
     report.add_argument("--db", default=str(DEFAULT_DB))
     report.add_argument("--out", default=str(ROOT / "results"))
     report.set_defaults(func=cmd_report)
+
+    rebuild = sub.add_parser(
+        "rebuild", help="replay every reported run from the committed cache (no key, no cost)"
+    )
+    rebuild.add_argument("--manifest", default=str(ROOT / "results" / "runs.json"))
+    rebuild.add_argument("--db", default=str(DEFAULT_DB))
+    rebuild.set_defaults(func=cmd_rebuild)
 
     est = sub.add_parser("estimate", help="what a prompt would cost on each model, before sending")
     est.add_argument("file", help="text file holding the prompt")
@@ -220,6 +278,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     spend.add_argument("--since", help="first UTC day to include, YYYY-MM-DD")
     spend.add_argument("--cache", default=str(ROOT / "cache"))
+    spend.add_argument("--json", action="store_true", help="machine-readable output")
     spend.set_defaults(func=cmd_spend)
 
     args = parser.parse_args(argv)

@@ -2,6 +2,14 @@
 
 Newest first. One line per finished step.
 
+- 2026-11-04 - **Phase 5 exit check PASSED (editable install)** ($0 spent): in a copy with no
+  `.env`, no API key and no results.sqlite, `costlab rebuild` replayed all 42 reported runs from
+  the committed cache and every number matched the original (42 runs x 6 fields, 0 diffs).
+  Added: `--json` on `table`/`compare`/`spend` (`table_rows`, `comparison_rows`; Markdown output
+  checked byte-identical on the real DB), `costlab` console script, `results/runs.json` manifest
+  (written by `costlab report`), `costlab rebuild`. README rewritten: results first, then the
+  3-command free reproduction. 240 tests.
+
 - 2026-11-04 - Phase 5 step 4: `python -m costlab estimate prompt.txt [--model M] [--output-tokens N]
   [--offline] [--json]` prices one prompt on every model in prices.yaml, cheapest first, with the
   batch price. Exact input tokens from the free count_tokens endpoint via
@@ -126,8 +134,11 @@ Newest first. One line per finished step.
   exit-check script written.
 
 ## Next
-1. Phase 5 remaining: `--json` on `compare`/`table`/`spend`; PyPI packaging check (fresh venv,
-   `costlab compare` with no key).
+1. Before PyPI (Phase 5 step 7): paths assume a repo checkout (`ROOT` = package parent:
+   prices.yaml, workloads/, cache/, results/). A non-editable `pip install ai-cost-lab` would not
+   find them. Decide: bundle prices.yaml as package data and resolve the rest from the current
+   folder, or ship the CLI as "clone the repo" only. Then Phase 6 (VS Code extension over
+   `costlab estimate --json`).
 2. Quality gate 5 (user): compare the Console Cost page (workspace `ai-cost-lab`) with
    `python -m costlab spend`: $0.077876 on 2026-11-01 and $0.678360 on 2026-11-04 (UTC).
    Then mark gate 5 in `results/notes.md`.

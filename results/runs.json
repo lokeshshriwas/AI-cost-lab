@@ -1,0 +1,212 @@
+[
+  {
+    "workload": "codefix",
+    "strategy": "baseline",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "baseline",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "baseline",
+    "model": "claude-sonnet-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "baseline@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "baseline@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "caching+low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "caching+low-effort+batch",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "caching+low-effort+batch@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "caching+low-effort+batch@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "cascade",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "prompt-caching",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "response-cache",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "codefix",
+    "strategy": "trim-context",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "baseline",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "baseline",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "baseline",
+    "model": "claude-sonnet-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "baseline@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "baseline@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "caching+low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "caching+low-effort+batch",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "caching+low-effort+batch@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "caching+low-effort+batch@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "cascade",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "prompt-caching",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "response-cache",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "extraction",
+    "strategy": "trim-context",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "baseline",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "baseline",
+    "model": "claude-opus-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "baseline",
+    "model": "claude-sonnet-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "baseline@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "baseline@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "caching+low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "caching+low-effort+batch",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "caching+low-effort+batch@repeat1",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "caching+low-effort+batch@repeat2",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "cascade",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "low-effort",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "prompt-caching",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "response-cache",
+    "model": "claude-haiku-5-5"
+  },
+  {
+    "workload": "qa",
+    "strategy": "trim-context",
+    "model": "claude-haiku-5-5"
+  }
+]

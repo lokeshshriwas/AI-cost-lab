@@ -2,6 +2,12 @@
 
 Newest first. Why we chose something, so later sessions don't undo it.
 
+- 2026-11-04 - **results.sqlite stays uncommitted; `results/runs.json` + `cache/` are the source
+  of truth.** `costlab rebuild` replays the manifest into a fresh DB and reproduces every number
+  exactly, so the DB is a derived file. `rebuild` refuses a DB that already has runs.
+- 2026-11-04 - **`--json` emits raw values** (fractions, USD floats, null for n/a), built from the
+  same row functions as the Markdown tables, so the two can never disagree.
+
 - 2026-11-04 - **`estimate` counts tokens with the API, not a local tokenizer.** Claude's
   tokenizer is not public and other tokenizers (tiktoken) undercount; count_tokens is free and
   per-model. Counts are cached under their own key (`_count_tokens`) so they never replay as

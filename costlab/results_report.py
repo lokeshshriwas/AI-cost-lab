@@ -11,6 +11,7 @@ light and a dark version and shown with <picture>, so it follows the reader's th
 
 from __future__ import annotations
 
+import json
 import math
 import statistics
 from dataclasses import dataclass, field
@@ -776,4 +777,15 @@ def write_report(store: ResultStore, prices: PriceTable, out_dir: Path) -> Path:
     path = out_dir / "RESULTS.md"
     models = collect_models(store, prices)
     path.write_text(build_results_md(by_workload, notes, models), encoding="utf-8")
+    write_manifest(store, out_dir / "runs.json")
     return path
+
+
+def write_manifest(store: ResultStore, path: Path) -> None:
+    """The runs behind the report, so `costlab rebuild` can replay them from the committed cache
+    (results.sqlite is not committed)."""
+    runs = [
+        {"workload": r["workload"], "strategy": r["strategy"], "model": r["model"]}
+        for r in store.latest_runs()
+    ]
+    path.write_text(json.dumps(runs, indent=2) + "\n", encoding="utf-8")
