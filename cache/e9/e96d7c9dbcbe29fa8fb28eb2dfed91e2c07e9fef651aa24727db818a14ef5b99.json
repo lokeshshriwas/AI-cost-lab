@@ -1,0 +1,5 @@
+{
+  "count_tokens": true,
+  "model": "claude-sonnet-5-5",
+  "input_tokens": 880
+}

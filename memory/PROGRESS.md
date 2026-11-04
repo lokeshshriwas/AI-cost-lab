@@ -2,6 +2,16 @@
 
 Newest first. One line per finished step.
 
+- 2026-11-04 - Phase 5 step 4: `python -m costlab estimate prompt.txt [--model M] [--output-tokens N]
+  [--offline] [--json]` prices one prompt on every model in prices.yaml, cheapest first, with the
+  batch price. Exact input tokens from the free count_tokens endpoint via
+  `ModelClient.count_tokens` (cached, no paid flag, never in replay mode); `--offline` uses 2.5
+  chars/token, measured on the 130 benchmark prompts (the "4 chars" rule missed by 35%; 2.5 is
+  +4.5% on a QA prompt). Cached counts are skipped by `costlab spend`. $0 spent. 229 tests.
+  CI fix: it was red since 45b50f9 because `tests/test_batch.py` imports `tests.test_strategies`,
+  which only resolves under `python -m pytest`; CI runs plain `pytest`. Added
+  `pythonpath = ["."]` to pytest config; reproduced locally with `.venv\Scripts\pytest`.
+
 - 2026-11-04 - **Gate 4 headline PASSED + model comparison** ($0.678 new spend, logged; month
   total $0.757). Batch repeats done: pooled cut -70.4% / -70.9% / -71.0% (repeat2 qa batch
   recovered with `import_batch`). Sonnet 5.5 and Opus 5.5 full baselines: same 100% on codefix,
@@ -116,10 +126,12 @@ Newest first. One line per finished step.
   exit-check script written.
 
 ## Next
-1. Quality gate 5 (user): compare the Console Cost page (workspace `ai-cost-lab`) with
+1. Phase 5 remaining: `--json` on `compare`/`table`/`spend`; PyPI packaging check (fresh venv,
+   `costlab compare` with no key).
+2. Quality gate 5 (user): compare the Console Cost page (workspace `ai-cost-lab`) with
    `python -m costlab spend`: $0.077876 on 2026-11-01 and $0.678360 on 2026-11-04 (UTC).
    Then mark gate 5 in `results/notes.md`.
-2. Optional, ~$0.5-1 of credit before the 2026-11-09 renewal: run `caching+low-effort` on
+3. Optional, ~$0.5-1 of credit before the 2026-11-09 renewal: run `caching+low-effort` on
    Sonnet/Opus to see if the levers save more on bigger models (report needs strategy rows per
    model first).
 3. Phase 4 exit check: someone new reads RESULTS.md in 2 minutes and repeats the headline.

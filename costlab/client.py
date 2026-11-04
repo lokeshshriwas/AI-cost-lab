@@ -132,6 +132,32 @@ class ModelClient:
                     out[i] = BatchRequestFailed(failures.get(key, "missing from batch results"))
         return out  # type: ignore[return-value]
 
+    def count_tokens(
+        self,
+        model: str,
+        messages: list[dict[str, Any]],
+        *,
+        system: str | list[dict[str, Any]] | None = None,
+    ) -> int:
+        """Input tokens this request would use on `model`, from the free count_tokens endpoint.
+
+        Free, so no COSTLAB_ALLOW_PAID needed, but cached like answers: a repeat count makes
+        no call, and replay mode never touches the network.
+        """
+        request: dict[str, Any] = {"model": model, "messages": messages}
+        if system is not None:
+            request["system"] = system
+        # Its own key space: a count must never replay as an answer, or the reverse.
+        key = self._key({**request, "_count_tokens": True})
+        entry = self.cache.get(key)
+        if entry is not None:
+            return entry["input_tokens"]
+        if self.mode == "replay":
+            raise CacheMiss(f"No recorded token count for {model} (key {key[:12]})")
+        tokens = self._sdk_client().messages.count_tokens(**request).input_tokens
+        self.cache.put(key, {"count_tokens": True, "model": model, "input_tokens": tokens})
+        return tokens
+
     def recent_batches(self, limit: int = 5) -> list[dict[str, Any]]:
         """The account's newest Message Batches (a free read, no tokens). For finding a batch
         that was submitted by a run that was interrupted before it collected the results."""

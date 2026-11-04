@@ -45,6 +45,8 @@ def ledger(
     totals: dict[tuple[str, str, bool], list[float]] = defaultdict(lambda: [0, 0.0])
     for path in Path(cache_root).glob("*/*.json"):
         entry = json.loads(path.read_text(encoding="utf-8"))
+        if entry.get("count_tokens"):
+            continue  # a cached token count (free endpoint), not a paid answer
         day = _day(entry, path)
         if since is not None and day < since:
             continue

@@ -26,6 +26,9 @@ packages = ["costlab", "costlab.graders", "costlab.strategies"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Tests share helpers (`from tests.test_strategies import ...`). Plain `pytest` (CI) does not put
+# the project folder on sys.path the way `python -m pytest` does, so add it explicitly.
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

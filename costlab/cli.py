@@ -9,6 +9,7 @@ python -m costlab table
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from dotenv import load_dotenv
 
 from costlab.cache import ResponseCache
 from costlab.client import CacheMiss, ModelClient, PaidCallNotAllowed
+from costlab.estimate import estimate, format_estimates
 from costlab.models import load_tasks, summarize, tasks_hash
 from costlab.pricing import PriceTable
 from costlab.report import build_comparison, build_table
@@ -112,6 +114,33 @@ def cmd_report(args) -> int:
     return 0
 
 
+def cmd_estimate(args) -> int:
+    prices = PriceTable.load()
+    prompt = Path(args.file).read_text(encoding="utf-8")
+    models = args.model or prices.models()
+    count = None
+    if not args.offline:
+        client = ModelClient(ResponseCache(), prices)
+
+        def count(model: str, text: str) -> int:
+            return client.count_tokens(model, [{"role": "user", "content": text}])
+
+    try:
+        results = estimate(prompt, models, prices, args.output_tokens, count)
+    except KeyError as e:
+        print(f"stopped: {e.args[0]}", file=sys.stderr)
+        return 2
+    except Exception as e:  # no key, no network: say how to get an answer anyway
+        print(f"stopped: could not count tokens ({type(e).__name__}: {e})", file=sys.stderr)
+        print("add --offline for an approximate estimate without the API.", file=sys.stderr)
+        return 2
+    if args.json:
+        print(json.dumps([e.as_dict() for e in results], indent=2))
+    else:
+        print(format_estimates(results))
+    return 0
+
+
 def cmd_spend(args) -> int:
     print(format_ledger(ledger(PriceTable.load(), args.cache, since=args.since)))
     return 0
@@ -171,6 +200,20 @@ def main(argv: list[str] | None = None) -> int:
     report.add_argument("--db", default=str(DEFAULT_DB))
     report.add_argument("--out", default=str(ROOT / "results"))
     report.set_defaults(func=cmd_report)
+
+    est = sub.add_parser("estimate", help="what a prompt would cost on each model, before sending")
+    est.add_argument("file", help="text file holding the prompt")
+    est.add_argument(
+        "--model", action="append", help="model to price (repeatable; default: every model)"
+    )
+    est.add_argument(
+        "--output-tokens", type=int, default=500, help="assumed reply length (default 500)"
+    )
+    est.add_argument(
+        "--offline", action="store_true", help="approximate tokens locally (no API, no key)"
+    )
+    est.add_argument("--json", action="store_true", help="machine-readable output")
+    est.set_defaults(func=cmd_estimate)
 
     spend = sub.add_parser(
         "spend", help="what was actually paid, by day and model, from the cache (gate 5)"

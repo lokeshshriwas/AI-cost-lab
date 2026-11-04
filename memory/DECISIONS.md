@@ -2,6 +2,13 @@
 
 Newest first. Why we chose something, so later sessions don't undo it.
 
+- 2026-11-04 - **`estimate` counts tokens with the API, not a local tokenizer.** Claude's
+  tokenizer is not public and other tokenizers (tiktoken) undercount; count_tokens is free and
+  per-model. Counts are cached under their own key (`_count_tokens`) so they never replay as
+  answers and never show up as spend. Offline fallback: 2.5 chars/token, measured here.
+- 2026-11-04 - **Output tokens are an input to `estimate`, not a guess we hide.** Reply length
+  (and thinking) cannot be known before sending; the table states the assumption.
+
 - 2026-11-04 - **A run with API errors is not saved** (exit 3). An error means no answer, not a
   wrong answer; saving it scored a network drop as model failure (Opus qa 8/50 -> 43/50 after a
   re-run). Re-running is cheap: answers that arrived are cached. `--allow-errors` for errors

@@ -9,7 +9,7 @@ Read `memory/PROGRESS.md` first. The full plan is `docs/PLAN.md`; work one numbe
 - Prices live only in `prices.yaml`. Never hard-code a price in code.
 
 ## Commands
-- Tests: `.venv\Scripts\python -m pytest -q`
+- Tests: `.venv\Scripts\pytest -q` (plain `pytest`, like CI; `python -m pytest` can hide import-path bugs)
 - Lint: `.venv\Scripts\python -m ruff check .` and `ruff format .`
 
 ## Money rules (do not break)
