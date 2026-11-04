@@ -1,0 +1,12 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "{\"type\":\"invoice\",\"invoice_number\":\"QS-0093\",\"vendor\":\"Quillfeather Studio\",\"issue_date\":\"2026-02-02\",\"due_date\":\"2026-03-02\",\"currency\":\"EUR\",\"subtotal\":1350.00,\"tax\":0,\"total\":1350.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 378,
+    "output_tokens": 96,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.942
+}

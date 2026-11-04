@@ -2,6 +2,28 @@
 
 Newest first. Why we chose something, so later sessions don't undo it.
 
+- 2026-11-04 - **A run with API errors is not saved** (exit 3). An error means no answer, not a
+  wrong answer; saving it scored a network drop as model failure (Opus qa 8/50 -> 43/50 after a
+  re-run). Re-running is cheap: answers that arrived are cached. `--allow-errors` for errors
+  that are permanent.
+- 2026-11-04 - **The cache is the spend ledger** (`costlab spend`). One cache file = one paid
+  answer, including batch answers recovered with `import_batch` that SQLite shows as replayed.
+  New entries carry `recorded_at`; older ones use file mtime (wrong in a fresh clone).
+- 2026-11-04 - **Strategies are compared on one reference model** (the model with the most
+  strategies, Haiku). Other models appear only as plain baselines in "Which model?", so a
+  Sonnet baseline never becomes another "baseline" row in Haiku's tables.
+- 2026-11-04 - **Answer keys unchanged after the bigger models scored lower.** Their misses are
+  real against the task rules (null when the document gives no date, fixed label set, short
+  answers); the grader's strictness is written up as a caveat instead.
+
+- 2026-11-04 - **Repeats are paired by tag.** The headline is re-measured as
+  `strategy@repeatN` vs `baseline@repeatN` (both fresh), never a fresh strategy run against the
+  original baseline, so baseline noise is not counted as a saving or a loss. A pooled repeat
+  needs the tag on every workload for both; otherwise the report says it is partial.
+- 2026-11-04 - **Gate 4 spread = max/min - 1 of cost per success** across the reported run and its
+  repeats, compared with 5% (`MAX_REPEAT_SPREAD`). Kept at 5% as the plan says, even though the
+  baseline alone spreads ~6.5%; the report shows that rather than hiding it.
+
 - 2026-11-01 - **RESULTS.md is generated, never hand-edited.** `python -m costlab report` rebuilds it from
   SQLite; only `results/notes.md` is hand-written. Only full runs on the baseline's task file are
   reported. Rows whose answers were all replayed from the baseline are labeled "= baseline

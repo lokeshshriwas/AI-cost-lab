@@ -1,0 +1,12 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "7 business days at most",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 886,
+    "output_tokens": 8,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.414
+}

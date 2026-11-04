@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "```json\n{\"type\": \"invoice\", \"invoice_number\": \"OS/2026/0311\", \"vendor\": \"Oakhurst & Sons (Pty) Ltd\", \"issue_date\": \"2026-03-03\", \"due_date\": \"2026-03-17\", \"currency\": \"AUD\", \"subtotal\": 4100.00, \"tax\": 410.00, \"total\": 4510.00}\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 378,
+    "output_tokens": 125,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.805,
+  "recorded_at": "2026-11-04T11:45:09+00:00"
+}

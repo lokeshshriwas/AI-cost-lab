@@ -1,0 +1,12 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "{\"type\":\"invoice\",\"invoice_number\":\"MR-3307\",\"vendor\":\"Maple Row Bakery\",\"issue_date\":\"2026-07-02\",\"due_date\":\"2026-07-31\",\"currency\":\"USD\",\"subtotal\":284.00,\"tax\":0.00,\"total\":284.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 397,
+    "output_tokens": 95,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.689
+}

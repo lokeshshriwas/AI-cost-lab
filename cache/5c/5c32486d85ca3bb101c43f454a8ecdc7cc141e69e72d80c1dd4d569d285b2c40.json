@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "returns@oakridge.example",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 874,
+    "output_tokens": 11,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.884,
+  "recorded_at": "2026-11-04T12:15:17+00:00"
+}

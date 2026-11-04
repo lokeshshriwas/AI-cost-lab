@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "```json\n{\"type\": \"invoice\", \"invoice_number\": \"MR-3307\", \"vendor\": \"Maple Row Bakery\", \"issue_date\": \"2026-07-02\", \"due_date\": \"2026-07-31\", \"currency\": \"USD\", \"subtotal\": 284.00, \"tax\": 0, \"total\": 284.00}\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 397,
+    "output_tokens": 107,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.991,
+  "recorded_at": "2026-11-04T11:45:13+00:00"
+}

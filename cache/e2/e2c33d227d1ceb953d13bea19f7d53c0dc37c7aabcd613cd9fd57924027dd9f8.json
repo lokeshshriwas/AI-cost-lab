@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef is_anagram(a, b):\n    a = a.replace(' ', '').lower()\n    b = b.replace(' ', '').lower()\n    return sorted(a) == sorted(b)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 184,
+    "output_tokens": 193,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 153.518,
+  "batch": true
+}

@@ -1,0 +1,13 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef chunk(items, n):\n    return [items[i:i + n] for i in range(0, len(items), n)]\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 231,
+    "output_tokens": 42,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.562,
+  "recorded_at": "2026-11-04T11:44:34+00:00"
+}

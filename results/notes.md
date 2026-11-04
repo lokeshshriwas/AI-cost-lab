@@ -1,8 +1,17 @@
 ## Caveats (hand-written, `results/notes.md`)
 
-- **One model, the cheapest.** Every run uses Claude Haiku 5.5, which is also the baseline. It
-  already passed 92-100%, so nothing here measures switching models. That is also why the
-  cascade could not win: escalating from the cheapest model can only add cost.
+- **Strategies were measured on the cheapest model.** Every strategy row uses Claude Haiku 5.5,
+  which already passed 92-100%. That is also why the cascade could not win: escalating from the
+  cheapest model can only add cost.
+- **Bigger models scored lower here, and that is partly the grader.** Sonnet 5.5 and Opus 5.5
+  (plain baselines, see "Which model?") matched Haiku on code fixes and fell 6-8 points behind
+  on extraction and Q&A, at 18-42x the cost per success. Reading every failure: they "over-help".
+  On extraction they compute due dates from payment terms where the answer key says the
+  document gives none (Opus 5 times, Haiku 2), and invent a request label ("information") that
+  is not one of the allowed values. On Q&A the facts were right but the answers carried
+  qualifiers ("5 business days" for "5"), which the strict grader fails. So: for short,
+  rule-bound tasks with exact answers, the cheapest model was the best choice; a looser grader
+  would narrow the quality gap but not the 18-42x cost gap. These are single runs.
 - **Small, self-written task sets.** 50 extraction tasks, 50 Q&A questions over two short
   fictional documents, 30 code fixes. One task is 2 points of pass rate (3.3 on code fixes).
 - **Quality noise is about 2 points.** Strategies that send exactly the baseline's prompt text
@@ -52,6 +61,6 @@
 | 1. Same tasks | Checked automatically: rows whose task-file hash differs from the baseline are left out. |
 | 2. Grader sanity | Passed: tests check every grader passes the expected answers and fails wrong ones. |
 | 3. Quality held | Per row above (no workload lost more than 1 point, i.e. no task). |
-| 4. Repeatability | **Not done yet.** Needs fresh repeat runs (`costlab run --repeat-tag`). |
+| 4. Repeatability | **Headline passed; single rows are noisy.** Re-measured twice with fresh calls on both sides, the pooled cut was -70.4%, -70.9%, -71.0% (within 0.6 points). Per workload, cost per success moved 3-9% between runs, and the unchanged baseline itself moved 5.6-6.5%: the plan's 5% per-row target is tighter than the model's own run-to-run noise, so single-workload differences under ~10% are not meaningful. |
 | 5. Cost cross-check | **Not done yet** (compare the Console Cost page with `memory/SPEND.md`). |
 | 6. No leakage | Prompts hold no answers (the cascade's check reads only the prompt); CI scans for API keys. |

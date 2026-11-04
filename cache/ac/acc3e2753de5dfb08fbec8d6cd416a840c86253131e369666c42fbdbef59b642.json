@@ -1,0 +1,13 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef apply_discount(price, percent):\n    return round(price * (1 - percent / 100), 2)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 161,
+    "output_tokens": 177,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.296,
+  "recorded_at": "2026-11-04T11:44:51+00:00"
+}

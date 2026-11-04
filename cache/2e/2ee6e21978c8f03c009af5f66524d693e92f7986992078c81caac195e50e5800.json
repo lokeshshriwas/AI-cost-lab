@@ -1,0 +1,13 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef is_anagram(a, b):\n    return sorted(a.replace(' ', '').lower()) == sorted(b.replace(' ', '').lower())\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 184,
+    "output_tokens": 57,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.725,
+  "recorded_at": "2026-11-04T11:44:45+00:00"
+}

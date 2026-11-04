@@ -213,3 +213,41 @@ def test_cli_limit_runs_only_first_n_tasks(tmp_path, monkeypatch):
         == 0
     )
     assert seen == ["doc one"]
+
+
+class FlakyClient(FakeClient):
+    """Answers "doc one" and fails "doc two" like a dropped connection."""
+
+    def call(self, model, messages, **kw):
+        if messages[0]["content"] == "doc two":
+            raise ConnectionError("Connection error.")
+        return super().call(model, messages, **kw)
+
+
+def _run_flaky(tmp_path, monkeypatch, *extra):
+    tasks = write_tasks(tmp_path / "tasks.jsonl", extraction_rows())
+    monkeypatch.setattr("costlab.cli.ResponseCache", lambda: Cache(tmp_path / "cache"))
+    monkeypatch.setattr(
+        "costlab.cli.ModelClient", lambda *a, **k: FlakyClient({"doc one": "{}", "doc two": "{}"})
+    )
+    db = tmp_path / "r.sqlite"
+    code = main(
+        ["run", "extraction", "--model", MODEL, "--tasks", str(tasks), "--db", str(db), *extra]
+    )
+    with ResultStore(db) as store:
+        return code, store.latest_runs()
+
+
+def test_cli_does_not_save_a_run_with_api_errors(tmp_path, capsys, monkeypatch):
+    code, runs = _run_flaky(tmp_path, monkeypatch)
+    assert code == 3
+    assert runs == []
+    err = capsys.readouterr().err
+    assert "1 of 2 tasks got no answer from the API" in err
+    assert "ConnectionError: Connection error." in err
+
+
+def test_cli_allow_errors_saves_them_as_failures(tmp_path, monkeypatch):
+    code, runs = _run_flaky(tmp_path, monkeypatch, "--allow-errors")
+    assert code == 0
+    assert [r["task_count"] for r in runs] == [2]

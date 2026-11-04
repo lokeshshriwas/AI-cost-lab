@@ -1,0 +1,12 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "{\"type\":\"invoice\",\"invoice_number\":\"8812\",\"vendor\":\"Trellis Mobile Repairs\",\"issue_date\":\"2026-04-22\",\"due_date\":null,\"currency\":\"GBP\",\"subtotal\":52.00,\"tax\":10.40,\"total\":62.40}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 388,
+    "output_tokens": 91,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.833
+}

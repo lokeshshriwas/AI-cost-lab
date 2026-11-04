@@ -1,0 +1,14 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef factorial(n):\n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    return result\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 160,
+    "output_tokens": 44,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 404.89,
+  "recorded_at": "2026-11-04T12:21:50+00:00",
+  "batch": true
+}

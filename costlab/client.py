@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 from costlab.cache import ResponseCache
@@ -235,6 +236,8 @@ class ModelClient:
                 "cache_read_input_tokens": usage.cache_read_input_tokens or 0,
             },
             "latency_s": round(latency, 3),
+            # When the answer was paid for; `costlab spend` totals the cache by day (gate 5).
+            "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
         }
 
     def _result(self, entry: dict[str, Any], from_cache: bool) -> CallResult:

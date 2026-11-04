@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"66-0219\", \"vendor\": \"PEAK PHARMA SUPPLY\", \"issue_date\": \"2026-08-19\", \"due_date\": null, \"currency\": \"AUD\", \"subtotal\": 2127.27, \"tax\": 212.73, \"total\": 2340.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 363,
+    "output_tokens": 106,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 366.341,
+  "batch": true
+}

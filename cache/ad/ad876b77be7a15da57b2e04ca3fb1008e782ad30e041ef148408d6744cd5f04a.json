@@ -1,0 +1,13 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef count_vowels(s):\n    return sum(1 for ch in s.lower() if ch in 'aeiou')\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 173,
+    "output_tokens": 44,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.86,
+  "recorded_at": "2026-11-04T11:44:09+00:00"
+}

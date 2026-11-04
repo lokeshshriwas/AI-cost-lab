@@ -1,0 +1,13 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef min_max(nums):\n    return (min(nums), max(nums))\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 162,
+    "output_tokens": 29,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.48,
+  "recorded_at": "2026-11-04T11:44:41+00:00"
+}

@@ -1,0 +1,14 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "Monday to Friday",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 20,
+    "output_tokens": 9,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 858
+  },
+  "latency_s": 0.0,
+  "recorded_at": "2026-11-04T12:14:48+00:00",
+  "batch": true
+}

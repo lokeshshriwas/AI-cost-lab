@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Sofia Rossi\", \"subject\": \"Lunch next week?\", \"request\": \"meeting\", \"deadline\": \"2026-11-11\", \"urgent\": false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 289,
+    "output_tokens": 236,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 3.259,
+  "recorded_at": "2026-11-04T11:46:23+00:00"
+}

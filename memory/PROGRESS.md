@@ -2,6 +2,24 @@
 
 Newest first. One line per finished step.
 
+- 2026-11-04 - **Gate 4 headline PASSED + model comparison** ($0.678 new spend, logged; month
+  total $0.757). Batch repeats done: pooled cut -70.4% / -70.9% / -71.0% (repeat2 qa batch
+  recovered with `import_batch`). Sonnet 5.5 and Opus 5.5 full baselines: same 100% on codefix,
+  6-8 pts LOWER on extraction and qa, at 18.5x (Sonnet) and 41.7x (Opus) Haiku's cost per
+  success. Failures read by hand: bigger models "over-help" (compute due dates the key leaves
+  null, invent a label, add qualifiers like "5 business days"); written up in notes.md. New:
+  report "Which model?" section (`collect_models`, strategies stay on the reference model);
+  `python -m costlab spend` totals the cache by day/model (gate 5); `costlab run` refuses to
+  save a run with API errors (`--allow-errors` to override) after a network drop made Opus look
+  like 8/50. 220 tests.
+
+- 2026-11-04 - Gate 4 report ($0 spent): `@repeatN` runs now fold into their strategy's row
+  (`Row.repeats`, `Row.base_repeats`) instead of showing as extra strategies; new "Repeatability
+  (quality gate 4)" section in RESULTS.md (pass-rate range, cost-per-success range, spread vs 5%)
+  and the headline is re-measured per repeat tag, paired with the baseline's same-tag repeat.
+  RESULTS.md regenerated. Finding: the baseline alone spreads 5.6-6.5% across 3 fresh runs, so
+  the 5% target is tighter than run-to-run noise (noted in `results/notes.md`). 210 tests.
+
 - 2026-11-04 - Gate 4 repeat runs, part 1 ($0.026427, logged): baseline repeat1/repeat2 on all
   three workloads (runs 46-51: extraction 48/50 and 47/50 vs 46/50 originally, qa 46 and 47,
   codefix 30 and 30); batch strategy repeat1 on extraction (run 52, 46/50) and qa (run 53, 47/50,
@@ -98,8 +116,10 @@ Newest first. One line per finished step.
   exit-check script written.
 
 ## Next
-1. Finish gate 4: `caching+low-effort --batch --repeat-tag repeat1` on codefix, then `repeat2` on
-   all three workloads (~$0.004). Then teach the report to fold `@repeatN` runs into a spread per
-   strategy before regenerating RESULTS.md.
-2. Quality gate 5: compare the Console Cost page with SPEND.md (~$0.078 for November so far).
+1. Quality gate 5 (user): compare the Console Cost page (workspace `ai-cost-lab`) with
+   `python -m costlab spend`: $0.077876 on 2026-11-01 and $0.678360 on 2026-11-04 (UTC).
+   Then mark gate 5 in `results/notes.md`.
+2. Optional, ~$0.5-1 of credit before the 2026-11-09 renewal: run `caching+low-effort` on
+   Sonnet/Opus to see if the levers save more on bigger models (report needs strategy rows per
+   model first).
 3. Phase 4 exit check: someone new reads RESULTS.md in 2 minutes and repeats the headline.

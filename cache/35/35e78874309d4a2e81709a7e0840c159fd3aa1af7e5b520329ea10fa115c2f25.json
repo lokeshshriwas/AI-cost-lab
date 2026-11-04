@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "```python\ndef mean_positive(nums):\n    pos = [n for n in nums if n > 0]\n    if not pos:\n        return 0.0\n    return sum(pos) / len(pos)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 200,
+    "output_tokens": 148,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.778,
+  "recorded_at": "2026-11-04T12:16:42+00:00"
+}

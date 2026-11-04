@@ -178,3 +178,147 @@ def test_batch_headline_splits_out_the_discount_and_names_the_no_wait_option(tmp
     assert "50% list-price discount" in md
     assert "**Best without the batch wait:** `lever`" in md
     assert "without losing a single task" in md
+
+
+# ---- repeat runs (quality gate 4) ----
+
+
+def per_success(tokens_in):
+    """Cost per success for `results(...)` rows where every task passes."""
+    return (tokens_in * 0.10 + 10 * 0.50) / 1e6
+
+
+def _save(s, workload, strategy, tokens, passes=(True,) * 4):
+    s.save_run(
+        workload=workload,
+        strategy=strategy,
+        model=MODEL,
+        tasks_hash="h",
+        results=results(workload, strategy, list(passes), tokens),
+    )
+
+
+def test_repeats_fold_into_their_strategy_row_and_never_become_rows(tmp_path):
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        _save(s, "qa", "baseline", 1000)
+        _save(s, "qa", "baseline@repeat1", 1000)
+        _save(s, "qa", "lever", 600)
+        _save(s, "qa", "lever@repeat1", 605)
+        _save(s, "qa", "lever@repeat2", 600, passes=(True,) * 2)  # partial: left out
+        rows = {r.strategy: r for r in collect_rows(s, PriceTable.load())["qa"]}
+        svg = chart_svg("qa", list(rows.values()), "light")
+    assert set(rows) == {"baseline", "lever"}
+    assert set(rows["lever"].repeats) == {"repeat1"}
+    assert set(rows["lever"].base_repeats) == {"repeat1"}
+    assert set(rows["baseline"].repeats) == {"repeat1"}
+    assert "@repeat" not in svg
+
+
+def test_repeat_spread_is_checked_against_five_percent(tmp_path):
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        _save(s, "qa", "baseline", 1000)
+        _save(s, "qa", "steady", 600)
+        _save(s, "qa", "steady@repeat1", 605)
+        _save(s, "qa", "noisy", 600)
+        _save(s, "qa", "noisy@repeat1", 800)
+        rows = collect_rows(s, PriceTable.load())
+        md = build_results_md(rows, notes=None)
+    by_name = {r.strategy: r for r in rows["qa"]}
+    assert by_name["steady"].cost_spread == pytest.approx(per_success(605) / per_success(600) - 1)
+    assert by_name["noisy"].cost_spread == pytest.approx(per_success(800) / per_success(600) - 1)
+    assert "## Repeatability (quality gate 4)" in md
+    assert "| qa | `steady` | 2 | 100% |" in md and "| 0.8% | yes |" in md
+    assert "| qa | `noisy` | 2 | 100% |" in md and "| **no** |" in md
+
+
+def test_headline_is_re_measured_against_the_baselines_own_repeat(tmp_path):
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        _save(s, "qa", "baseline", 1000)
+        _save(s, "qa", "baseline@repeat1", 1000)
+        _save(s, "qa", "lever", 600)
+        _save(s, "qa", "lever@repeat1", 400)
+        md = build_results_md(collect_rows(s, PriceTable.load()), notes=None)
+    reported = per_success(600) / per_success(1000) - 1
+    repeat = per_success(400) / per_success(1000) - 1
+    assert f"the cut ranged from {-reported:.1%} to {-repeat:.1%}" in md
+    assert f"- `lever`: reported run {reported:+.1%}; repeat1 {repeat:+.1%}." in md
+    assert "Not yet repeated" not in md
+
+
+def test_unrepeated_headline_says_so_and_has_no_repeat_section(tmp_path):
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        _save(s, "qa", "baseline", 1000)
+        _save(s, "qa", "lever", 600)
+        md = build_results_md(collect_rows(s, PriceTable.load()), notes=None)
+    assert "**Not yet repeated on every workload.**" in md
+    assert "## Repeatability" not in md
+
+
+def test_repeats_on_some_workloads_only_give_no_pooled_repeat(tmp_path):
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        for workload in ("qa", "extraction"):
+            _save(s, workload, "baseline", 1000)
+            _save(s, workload, "baseline@repeat1", 1000)
+            _save(s, workload, "lever", 600)
+        _save(s, "qa", "lever@repeat1", 600)
+        md = build_results_md(collect_rows(s, PriceTable.load()), notes=None)
+    assert "| qa | `lever` | 2 |" in md
+    assert "Repeated on some workloads only, so no pooled repeat yet: `lever`." in md
+    assert "**Not yet repeated on every workload.**" in md
+
+
+# ---- model comparison ----
+
+
+def _save_model(s, workload, strategy, model, tokens, passes=(True,) * 4):
+    call = CallResult(model, "", "end_turn", Usage(tokens, 10), 0.0, 1.0, False)
+    s.save_run(
+        workload=workload,
+        strategy=strategy,
+        model=model,
+        tasks_hash="h",
+        results=[
+            Result(f"t{i}", workload, strategy, "", ok, [call]) for i, ok in enumerate(passes)
+        ],
+    )
+
+
+def test_strategy_rows_stay_on_the_reference_model(tmp_path):
+    from costlab.results_report import collect_models
+
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        _save_model(s, "qa", "baseline", MODEL, 1000)
+        _save_model(s, "qa", "lever", MODEL, 600)
+        _save_model(s, "qa", "baseline", "claude-opus-5-5", 1000)
+        rows = collect_rows(s, PriceTable.load())
+        models = collect_models(s, PriceTable.load())
+    assert [(r.strategy, r.model) for r in rows["qa"]] == [("baseline", MODEL), ("lever", MODEL)]
+    assert [r.model for r in models["qa"]] == [MODEL, "claude-opus-5-5"]
+
+
+def test_model_section_shows_quality_and_cost_multiple(tmp_path):
+    from costlab.results_report import collect_models
+
+    with ResultStore(tmp_path / "r.sqlite") as s:
+        for w in ("qa", "extraction"):
+            _save_model(s, w, "baseline", MODEL, 1000, passes=(True, True, True, False))
+            _save_model(s, w, "lever", MODEL, 600)
+            _save_model(s, w, "baseline", "claude-opus-5-5", 1000)
+        # A smoke run of a third model is left out.
+        _save_model(s, "qa", "baseline", "claude-sonnet-5-5", 1000, passes=(True,))
+        models = collect_models(s, PriceTable.load())
+        md = build_results_md(collect_rows(s, PriceTable.load()), None, models)
+    haiku = 4 * (1000 * 0.10 + 10 * 0.50) / 1e6 / 3
+    opus = 4 * (1000 * 4.00 + 10 * 20.00) / 1e6 / 4
+    assert "## Which model? (plain baseline, no optimizations)" in md
+    assert f"| qa | claude-opus-5-5 | 100.0% | +25.0 pts | ${opus * 1000:.3f} " in md
+    assert f"| {opus / haiku:.1f}x |" in md
+    assert "claude-sonnet-5-5" not in md
+    assert f"- `claude-opus-5-5`: 8/8 passed (100.0%), ${opus * 1000:.3f} per 1k successes" in md
+
+
+def test_no_model_section_with_one_model(store):
+    from costlab.results_report import collect_models
+
+    assert collect_models(store, PriceTable.load()) == {}
+    assert "Which model?" not in build_results_md(collect_rows(store, PriceTable.load()), None)

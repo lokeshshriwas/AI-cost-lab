@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"F-2026-0093\", \"vendor\": \"CANVAS & CLAY POTTERY\", \"issue_date\": \"2026-10-10\", \"due_date\": \"2026-11-09\", \"currency\": \"EUR\", \"subtotal\": 780.00, \"tax\": 163.80, \"total\": 943.80}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 390,
+    "output_tokens": 113,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.019,
+  "recorded_at": "2026-11-04T11:45:53+00:00"
+}

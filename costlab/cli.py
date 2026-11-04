@@ -21,6 +21,7 @@ from costlab.pricing import PriceTable
 from costlab.report import build_comparison, build_table
 from costlab.results_report import write_report
 from costlab.runner import BudgetExceeded, run_batch, run_strategy
+from costlab.spend import format_ledger, ledger
 from costlab.store import ResultStore
 from costlab.strategies import STRATEGIES, Cascade
 
@@ -56,6 +57,22 @@ def cmd_run(args) -> int:
         print(f"stopped: {e}", file=sys.stderr)
         print("nothing was saved to the results database.", file=sys.stderr)
         return 2
+
+    errored = [r for r in results if r.error]
+    if errored and not args.allow_errors:
+        # An API error is not a wrong answer: saving it would score the network, not the model.
+        print(
+            f"stopped: {len(errored)} of {len(results)} tasks got no answer from the API "
+            f"(first: {errored[0].error[:120]}).",
+            file=sys.stderr,
+        )
+        print(
+            "nothing was saved. Run the same command again: answers that arrived are cached "
+            "and replay free, so only the failed tasks are sent. If the errors are permanent, "
+            "add --allow-errors to save them as failures.",
+            file=sys.stderr,
+        )
+        return 3
 
     strategy_name = f"{strategy.name}+batch" if args.batch else strategy.name
     if args.repeat_tag:
@@ -95,6 +112,11 @@ def cmd_report(args) -> int:
     return 0
 
 
+def cmd_spend(args) -> int:
+    print(format_ledger(ledger(PriceTable.load(), args.cache, since=args.since)))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     load_dotenv(ROOT / ".env")  # ANTHROPIC_API_KEY lives only in .env (gitignored)
     parser = argparse.ArgumentParser(prog="costlab")
@@ -129,6 +151,11 @@ def main(argv: list[str] | None = None) -> int:
         "--repeat-tag",
         help="make fresh calls for a repeat run (quality gate 4); saved as <strategy>@<tag>",
     )
+    run.add_argument(
+        "--allow-errors",
+        action="store_true",
+        help="save the run even if some tasks got an API error (counted as failures)",
+    )
     run.add_argument("--db", default=str(DEFAULT_DB))
     run.set_defaults(func=cmd_run)
 
@@ -144,6 +171,13 @@ def main(argv: list[str] | None = None) -> int:
     report.add_argument("--db", default=str(DEFAULT_DB))
     report.add_argument("--out", default=str(ROOT / "results"))
     report.set_defaults(func=cmd_report)
+
+    spend = sub.add_parser(
+        "spend", help="what was actually paid, by day and model, from the cache (gate 5)"
+    )
+    spend.add_argument("--since", help="first UTC day to include, YYYY-MM-DD")
+    spend.add_argument("--cache", default=str(ROOT / "cache"))
+    spend.set_defaults(func=cmd_spend)
 
     args = parser.parse_args(argv)
     return args.func(args)

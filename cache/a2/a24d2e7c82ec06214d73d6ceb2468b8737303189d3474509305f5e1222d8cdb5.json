@@ -1,0 +1,14 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "The bug is the loop condition: `while lo < hi` skips the case where `lo == hi`, so a target at the final remaining index is never checked. Changing it to `lo <= hi` fixes this, and the `else` branch should set `hi = mid - 1` to exclude the already-checked midpoint.\n\n```python\ndef binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target:\n            return mid\n        if arr[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 302,
+    "output_tokens": 218,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 404.89,
+  "recorded_at": "2026-11-04T12:21:50+00:00",
+  "batch": true
+}

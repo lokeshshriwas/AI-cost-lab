@@ -1,0 +1,12 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "```python\ndef first_word(s):\n    words = s.split()\n    return words[0] if words else ''\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 162,
+    "output_tokens": 34,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.671
+}

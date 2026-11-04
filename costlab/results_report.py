@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import math
 import statistics
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -24,6 +24,10 @@ from costlab.store import ResultStore
 
 # The quality loss the headline allows, in percentage points (plan: "at most 1 point").
 MAX_QUALITY_LOSS_PTS = 1.0
+# Quality gate 4: fresh repeats of a strategy must agree on cost per success within this.
+MAX_REPEAT_SPREAD = 0.05
+# `costlab run --repeat-tag repeat1` saves the run as "<strategy>@repeat1".
+REPEAT_SEP = "@"
 
 # Chart colors from the dataviz reference palette. Strategy bars: categorical slot 1 (blue).
 # Baseline: a neutral reference mark (deliberately gray; it is labeled, never color-only).
@@ -61,6 +65,27 @@ class Row:
     # True when every answer was replayed from the baseline's own recorded calls: the strategy
     # sent the baseline's exact requests, so the row equals the baseline by construction.
     replayed: bool = False
+    # Fresh repeat runs of this strategy and of the baseline, by repeat tag (quality gate 4).
+    repeats: dict[str, Summary] = field(default_factory=dict)
+    base_repeats: dict[str, Summary] = field(default_factory=dict)
+
+    @property
+    def runs(self) -> list[Summary]:
+        """The reported run followed by its repeats."""
+        return [self.summary, *(self.repeats[t] for t in sorted(self.repeats))]
+
+    @property
+    def cost_spread(self) -> float | None:
+        """Largest / smallest cost per success across the runs, minus 1 (0.05 = 5% apart)."""
+        costs = [s.cost_per_success_usd for s in self.runs]
+        if len(costs) < 2 or any(c is None or c == 0 for c in costs):
+            return None
+        return max(costs) / min(costs) - 1
+
+    @property
+    def pass_range_pts(self) -> tuple[float, float]:
+        rates = [s.pass_rate * 100 for s in self.runs]
+        return min(rates), max(rates)
 
     @property
     def is_batch(self) -> bool:
@@ -83,20 +108,61 @@ class Row:
         return self.quality_pts >= -MAX_QUALITY_LOSS_PTS
 
 
+def _split_tag(strategy: str) -> tuple[str, str | None]:
+    name, sep, tag = strategy.partition(REPEAT_SEP)
+    return name, (tag if sep else None)
+
+
+def _comparable(run: dict, base: dict) -> bool:
+    # Gate 1, and no partial (smoke) runs in the report.
+    return run["tasks_hash"] == base["tasks_hash"] and run["task_count"] == base["task_count"]
+
+
+def reference_model(runs: list[dict]) -> str:
+    """The model the strategies were measured on: the one with the most distinct strategies."""
+    counts: dict[str, set[str]] = {}
+    for r in runs:
+        counts.setdefault(r["model"], set()).add(_split_tag(r["strategy"])[0])
+    # Ties go to the alphabetically first model, so the choice never depends on run order.
+    return min(counts, key=lambda m: (-len(counts[m]), m))
+
+
 def collect_rows(store: ResultStore, prices: PriceTable) -> dict[str, list[Row]]:
-    """Full, comparable runs per workload: same task file and task count as the baseline."""
+    """Full, comparable runs per workload: same task file and task count as the baseline.
+
+    Repeat runs ("<strategy>@<tag>") are not rows of their own: they are folded into the row
+    of the strategy they repeat, so the tables and charts show each strategy once. Strategies
+    are compared on the reference model only; other models' baselines go to `collect_models`.
+    """
     runs = store.latest_runs()
     out: dict[str, list[Row]] = {}
     for workload in sorted({r["workload"] for r in runs}):
         in_w = [r for r in runs if r["workload"] == workload]
+        if not any(r["strategy"] == "baseline" for r in in_w):
+            continue
+        model = reference_model(in_w)
+        in_w = [r for r in in_w if r["model"] == model]
         bases = [r for r in in_w if r["strategy"] == "baseline"]
         if not bases:
             continue
+        comparable = _comparable
+
+        repeats: dict[tuple[str, str], dict[str, Summary]] = {}
+        for run in in_w:
+            name, tag = _split_tag(run["strategy"])
+            base = next((b for b in bases if b["model"] == run["model"]), bases[0])
+            if tag is not None and comparable(run, base):
+                repeats.setdefault((name, run["model"]), {})[tag] = summarize(
+                    store.load_results(run["id"]), prices
+                )
+
         rows = []
         for run in in_w:
+            if _split_tag(run["strategy"])[1] is not None:
+                continue
             base = next((b for b in bases if b["model"] == run["model"]), bases[0])
-            if run["tasks_hash"] != base["tasks_hash"] or run["task_count"] != base["task_count"]:
-                continue  # gate 1, and no partial (smoke) runs in the report
+            if not comparable(run, base):
+                continue
             results = store.load_results(run["id"])
             base_results = store.load_results(base["id"])
             replayed = (
@@ -112,10 +178,124 @@ def collect_rows(store: ResultStore, prices: PriceTable) -> dict[str, list[Row]]
                     summarize(results, prices),
                     summarize(base_results, prices),
                     replayed,
+                    repeats.get((run["strategy"], run["model"]), {}),
+                    repeats.get(("baseline", base["model"]), {}),
                 )
             )
         out[workload] = rows
     return out
+
+
+@dataclass(frozen=True)
+class ModelRow:
+    """One model's plain baseline on one workload, against the reference model's baseline."""
+
+    workload: str
+    model: str
+    summary: Summary
+    ref: Summary
+    ref_model: str
+
+    @property
+    def quality_pts(self) -> float:
+        return (self.summary.pass_rate - self.ref.pass_rate) * 100
+
+    @property
+    def cost_ratio(self) -> float | None:
+        """Cost per success as a multiple of the reference model's (3.0 = three times)."""
+        new, old = self.summary.cost_per_success_usd, self.ref.cost_per_success_usd
+        return new / old if new is not None and old else None
+
+
+def collect_models(store: ResultStore, prices: PriceTable) -> dict[str, list[ModelRow]]:
+    """Full baseline runs of every model per workload, reference model first.
+
+    Only workloads where at least two models have a full baseline on the same task file.
+    """
+    runs = store.latest_runs()
+    out: dict[str, list[ModelRow]] = {}
+    for workload in sorted({r["workload"] for r in runs}):
+        in_w = [r for r in runs if r["workload"] == workload]
+        bases = {r["model"]: r for r in in_w if r["strategy"] == "baseline"}
+        if not bases:
+            continue
+        ref_model = reference_model(in_w)
+        ref = bases.get(ref_model)
+        if ref is None:
+            continue
+        ref_summary = summarize(store.load_results(ref["id"]), prices)
+        rows = [
+            ModelRow(
+                workload,
+                model,
+                summarize(store.load_results(run["id"]), prices),
+                ref_summary,
+                ref_model,
+            )
+            for model, run in sorted(bases.items(), key=lambda kv: (kv[0] != ref_model, kv[0]))
+            if _comparable(run, ref)
+        ]
+        if len(rows) > 1:
+            out[workload] = rows
+    return out
+
+
+def _ratio(x: float | None) -> str:
+    return "n/a" if x is None else f"{x:.1f}x"
+
+
+def _models_section(models: dict[str, list[ModelRow]]) -> list[str]:
+    """Is a bigger model worth it? Plain baselines only: no strategy, same tasks."""
+    if not models:
+        return []
+    ref_model = next(iter(models.values()))[0].ref_model
+    lines = [
+        "## Which model? (plain baseline, no optimizations)",
+        "",
+        f"Every model answers the same tasks with the baseline prompt. Compared with "
+        f"{ref_model}, the model all strategies above were measured on.",
+        "",
+        "| Workload | Model | Pass rate | Quality vs "
+        f"{ref_model} | Cost per 1k successes | Cost vs {ref_model} |",
+        "| --- | --- | ---: | ---: | ---: | ---: |",
+    ]
+    for workload, rows in models.items():
+        for r in rows:
+            is_ref = r.model == r.ref_model
+            lines.append(
+                f"| {workload} | {r.model} | {r.summary.pass_rate:.1%} "
+                f"| {'-' if is_ref else f'{r.quality_pts:+.1f} pts'} "
+                f"| {per_1k(r.summary.cost_per_success_usd)} "
+                f"| {'-' if is_ref else _ratio(r.cost_ratio)} |"
+            )
+    # Pooled over the workloads where every listed model has a full baseline.
+    all_models = set.intersection(*({r.model for r in rows} for rows in models.values()))
+    if len(all_models) > 1:
+        lines += [
+            "",
+            f"All {len(models)} workloads pooled (total cost / total successful tasks):",
+            "",
+        ]
+        ref_rows = [rows[0] for rows in models.values()]
+        ref_passed = sum(r.ref.passed for r in ref_rows)
+        ref_cost = sum(r.ref.total_cost_usd for r in ref_rows) / ref_passed if ref_passed else None
+        for model in sorted(all_models, key=lambda m: (m != ref_model, m)):
+            mine = [next(r for r in rows if r.model == model) for rows in models.values()]
+            passed = sum(r.summary.passed for r in mine)
+            tasks = sum(r.summary.tasks for r in mine)
+            cost = sum(r.summary.total_cost_usd for r in mine) / passed if passed else None
+            ratio = cost / ref_cost if cost is not None and ref_cost else None
+            extra = (
+                ""
+                if model == ref_model
+                else f", {_ratio(ratio)} the cost per success of {ref_model}"
+            )
+            lines.append(
+                f"- `{model}`: {passed}/{tasks} passed ({passed / tasks:.1%}), "
+                f"{per_1k(cost)} per 1k successes{extra}."
+            )
+    lines.append("")
+    return lines
 
 
 def _money(x: float | None) -> str:
@@ -270,6 +450,24 @@ class Pooled:
     def no_task_lost(self) -> bool:
         return all(r.summary.passed >= r.base.passed for r in self.rows)
 
+    @property
+    def paired_tags(self) -> list[str]:
+        """Repeat tags run for this strategy AND the baseline on every workload."""
+        tags = set.intersection(*(set(r.repeats) & set(r.base_repeats) for r in self.rows))
+        return sorted(tags)
+
+    def change_for(self, tag: str) -> float | None:
+        """Pooled change vs baseline, re-measured with both sides' fresh `tag` runs."""
+        new = [r.repeats[tag] for r in self.rows]
+        old = [r.base_repeats[tag] for r in self.rows]
+        new_passed, old_passed = sum(s.passed for s in new), sum(s.passed for s in old)
+        if not new_passed or not old_passed:
+            return None
+        old_cost = sum(s.total_cost_usd for s in old) / old_passed
+        return (
+            (sum(s.total_cost_usd for s in new) / new_passed) / old_cost - 1 if old_cost else None
+        )
+
 
 def _overall(by_workload: dict[str, list[Row]]) -> list[Pooled]:
     """Strategies with a full run on every workload, best change first, baseline on top."""
@@ -347,11 +545,73 @@ def _headline_section(pooled: list[Pooled]) -> list[str]:
             f"- **{biggest} drives {saved[biggest] / total_saved:.0%} of the money saved.** A "
             "different mix of workloads would move the headline; see each workload below."
         )
-    lines += [
-        "- **Single runs.** Each strategy ran once; read the caveats on noise before quoting "
-        "small differences.",
+    changes = [c for c in (top.change_for(t) for t in top.paired_tags) if c is not None]
+    if changes:
+        all_changes = [top.change, *changes]
+        lines.append(
+            f"- **Repeated {len(changes)} more time{'s' if len(changes) > 1 else ''}** with fresh "
+            f"calls for both this strategy and the baseline: the cut ranged from "
+            f"{-max(all_changes):.1%} to {-min(all_changes):.1%}. See Repeatability below."
+        )
+    else:
+        lines.append(
+            "- **Not yet repeated on every workload.** The number comes from one run per "
+            "workload; see Repeatability below and the caveats on noise before quoting it."
+        )
+    lines.append("")
+    return lines
+
+
+def _repeat_section(by_workload: dict[str, list[Row]], pooled: list[Pooled]) -> list[str]:
+    """Quality gate 4: do fresh repeats of a strategy give the same numbers?"""
+    repeated = [r for rows in by_workload.values() for r in rows if r.repeats]
+    if not repeated:
+        return []
+    lines = [
+        "## Repeatability (quality gate 4)",
         "",
+        "Each repeat is a fresh run of the same strategy on the same tasks "
+        "(`costlab run --repeat-tag`), so the model answers again instead of replaying. Gate 4 "
+        f"asks cost per success to agree within {MAX_REPEAT_SPREAD:.0%} across runs. Ranges "
+        "include the run reported above.",
+        "",
+        "| Workload | Strategy | Runs | Pass rate | Cost per 1k successes | Spread "
+        f"| Within {MAX_REPEAT_SPREAD:.0%} |",
+        "| --- | --- | ---: | ---: | ---: | ---: | --- |",
     ]
+    for r in sorted(repeated, key=lambda r: (r.workload, r.strategy != "baseline", r.strategy)):
+        low, high = r.pass_range_pts
+        costs = [s.cost_per_success_usd for s in r.runs]
+        spread = r.cost_spread
+        within = "-" if spread is None else ("yes" if spread <= MAX_REPEAT_SPREAD else "**no**")
+        rates = f"{low:.0f}%" if low == high else f"{low:.0f}-{high:.0f}%"
+        lines.append(
+            f"| {r.workload} | `{r.strategy}` | {len(r.runs)} | {rates} "
+            f"| {per_1k(min(costs))} - {per_1k(max(costs))} | "
+            f"{'n/a' if spread is None else f'{spread:.1%}'} | {within} |"
+        )
+    paired = [p for p in pooled if p.name != "baseline" and p.paired_tags]
+    if paired:
+        lines += [
+            "",
+            "Change vs baseline, all workloads pooled, with each repeat paired against the "
+            "baseline's repeat of the same tag:",
+            "",
+        ]
+        for p in paired:
+            per_tag = ", ".join(f"{t} {_pct(p.change_for(t))}" for t in p.paired_tags)
+            lines.append(f"- `{p.name}`: reported run {_pct(p.change)}; {per_tag}.")
+    missing = [
+        f"`{p.name}`"
+        for p in pooled
+        if p.name != "baseline" and any(r.repeats for r in p.rows) and not p.paired_tags
+    ]
+    if missing:
+        lines += [
+            "",
+            f"Repeated on some workloads only, so no pooled repeat yet: {', '.join(missing)}.",
+        ]
+    lines.append("")
     return lines
 
 
@@ -454,7 +714,11 @@ def _didnt_work_section(by_workload: dict[str, list[Row]]) -> list[str]:
     return lines
 
 
-def build_results_md(by_workload: dict[str, list[Row]], notes: str | None) -> str:
+def build_results_md(
+    by_workload: dict[str, list[Row]],
+    notes: str | None,
+    models: dict[str, list[ModelRow]] | None = None,
+) -> str:
     now = datetime.now(UTC).strftime("%Y-%m-%d")
     pooled = _overall(by_workload)
     lines = [
@@ -490,6 +754,8 @@ def build_results_md(by_workload: dict[str, list[Row]], notes: str | None) -> st
     lines.append("")
     for workload, rows in by_workload.items():
         lines += _workload_section(workload, rows)
+    lines += _models_section(models or {})
+    lines += _repeat_section(by_workload, pooled)
     lines += _didnt_work_section(by_workload)
     if notes:
         lines += [notes.strip(), ""]
@@ -508,5 +774,6 @@ def write_report(store: ResultStore, prices: PriceTable, out_dir: Path) -> Path:
     notes_path = out_dir / "notes.md"
     notes = notes_path.read_text(encoding="utf-8") if notes_path.exists() else None
     path = out_dir / "RESULTS.md"
-    path.write_text(build_results_md(by_workload, notes), encoding="utf-8")
+    models = collect_models(store, prices)
+    path.write_text(build_results_md(by_workload, notes, models), encoding="utf-8")
     return path

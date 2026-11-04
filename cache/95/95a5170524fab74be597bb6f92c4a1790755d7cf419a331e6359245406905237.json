@@ -1,0 +1,12 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "```python\ndef average(nums):\n    return sum(nums) / len(nums)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 163,
+    "output_tokens": 28,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.019
+}

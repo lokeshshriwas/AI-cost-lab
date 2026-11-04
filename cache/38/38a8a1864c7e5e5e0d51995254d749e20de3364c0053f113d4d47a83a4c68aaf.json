@@ -1,0 +1,12 @@
+{
+  "model": "claude-sonnet-5-5",
+  "text": "{\"type\":\"email\",\"sender\":\"Ben Carter\",\"subject\":\"Quick question about VAT on services\",\"request\":\"information\",\"deadline\":null,\"urgent\":false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 289,
+    "output_tokens": 53,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.442
+}

@@ -1,0 +1,13 @@
+{
+  "model": "claude-opus-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"OCC-1184\", \"vendor\": \"Orchid Cleaning Co.\", \"issue_date\": \"2026-11-02\", \"due_date\": \"2026-11-16\", \"currency\": \"USD\", \"subtotal\": 320.00, \"tax\": 25.60, \"total\": 345.60}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 359,
+    "output_tokens": 174,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.446,
+  "recorded_at": "2026-11-04T11:45:51+00:00"
+}

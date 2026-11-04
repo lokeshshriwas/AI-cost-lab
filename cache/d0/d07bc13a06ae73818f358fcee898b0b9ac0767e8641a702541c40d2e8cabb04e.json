@@ -1,0 +1,14 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "We do (Oakridge Home Goods pays).\n\nWait, the instruction asks for a short answer only. Correction:\n\nOakridge (we pay)",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 25,
+    "output_tokens": 51,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 858
+  },
+  "latency_s": 0.0,
+  "recorded_at": "2026-11-04T12:14:48+00:00",
+  "batch": true
+}

@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef rotate_left(items, k):\n    if not items:\n        return []\n    k = k % len(items)\n    return items[k:] + items[:k]\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 236,
+    "output_tokens": 178,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 153.518,
+  "batch": true
+}
