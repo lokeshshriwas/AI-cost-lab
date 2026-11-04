@@ -7,8 +7,17 @@ from pathlib import Path
 
 import yaml
 
-DEFAULT_PRICES = Path(__file__).resolve().parent.parent / "prices.yaml"
+from costlab.paths import find
+
 PER_MILLION = 1_000_000
+
+
+def default_prices_path() -> Path:
+    """The project folder's prices.yaml if there is one, else the bundled one."""
+    path = find("prices.yaml")
+    if path is None:
+        raise FileNotFoundError("no prices.yaml in the project folder or the installed package")
+    return path
 
 
 @dataclass(frozen=True)
@@ -30,8 +39,9 @@ class PriceTable:
         self.batch_multiplier = batch_multiplier
 
     @classmethod
-    def load(cls, path: Path | str = DEFAULT_PRICES) -> PriceTable:
-        data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    def load(cls, path: Path | str | None = None) -> PriceTable:
+        path = default_prices_path() if path is None else Path(path)
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
         return cls(data["models"], data.get("batch_multiplier"))
 
     def models(self) -> list[str]:

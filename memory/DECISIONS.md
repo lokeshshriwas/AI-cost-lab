@@ -2,6 +2,14 @@
 
 Newest first. Why we chose something, so later sessions don't undo it.
 
+- 2026-11-04 - **The benchmark ships inside the wheel; the repo keeps one copy.** Root
+  `prices.yaml`, `workloads/`, `cache/`, `results/runs.json` stay the source of truth;
+  `scripts/build_bundle.py` copies them into `costlab/_bundle` (gitignored) only at build time.
+  Lookup order is project folder -> bundle -> checkout, so in the repo nothing changes and a
+  user's own `prices.yaml` overrides the bundled one. Never write into the bundle.
+- 2026-11-04 - **`costlab spend` counts only the project's cache**, never the bundled answers:
+  those were paid for by whoever recorded the benchmark.
+
 - 2026-11-04 - **results.sqlite stays uncommitted; `results/runs.json` + `cache/` are the source
   of truth.** `costlab rebuild` replays the manifest into a fresh DB and reproduces every number
   exactly, so the DB is a derived file. `rebuild` refuses a DB that already has runs.

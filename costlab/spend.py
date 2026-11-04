@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from costlab.cache import DEFAULT_CACHE_DIR
+from costlab.cache import default_cache_dir
 from costlab.pricing import PriceTable, Usage
 
 
@@ -40,10 +40,13 @@ def _day(entry: dict, path: Path) -> str:
 
 
 def ledger(
-    prices: PriceTable, cache_root: Path | str = DEFAULT_CACHE_DIR, since: str | None = None
+    prices: PriceTable, cache_root: Path | str | None = None, since: str | None = None
 ) -> list[SpendLine]:
+    """Paid answers in `cache_root` (default: the project's own cache, never the bundled one:
+    the bundled answers were paid for by whoever recorded the benchmark, not by you)."""
     totals: dict[tuple[str, str, bool], list[float]] = defaultdict(lambda: [0, 0.0])
-    for path in Path(cache_root).glob("*/*.json"):
+    root = default_cache_dir() if cache_root is None else Path(cache_root)
+    for path in root.glob("*/*.json"):
         entry = json.loads(path.read_text(encoding="utf-8"))
         if entry.get("count_tokens"):
             continue  # a cached token count (free endpoint), not a paid answer

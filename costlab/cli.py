@@ -20,6 +20,7 @@ from costlab.cache import ResponseCache
 from costlab.client import CacheMiss, ModelClient, PaidCallNotAllowed
 from costlab.estimate import estimate, format_estimates
 from costlab.models import load_tasks, summarize, tasks_hash
+from costlab.paths import find, project_path
 from costlab.pricing import PriceTable
 from costlab.report import build_comparison, build_table, comparison_rows, table_rows
 from costlab.results_report import write_report
@@ -28,8 +29,9 @@ from costlab.spend import format_ledger, ledger
 from costlab.store import ResultStore
 from costlab.strategies import STRATEGIES, Cascade
 
-ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_DB = ROOT / "results" / "results.sqlite"
+
+def default_db() -> str:
+    return str(project_path("results/results.sqlite"))
 
 
 def make_strategy(args):
@@ -40,9 +42,18 @@ def make_strategy(args):
 
 
 def cmd_run(args) -> int:
-    tasks_path = (
-        Path(args.tasks) if args.tasks else ROOT / "workloads" / args.workload / "tasks.jsonl"
-    )
+    if args.tasks:
+        tasks_path = Path(args.tasks)
+    else:
+        found = find(f"workloads/{args.workload}/tasks.jsonl")
+        if found is None:
+            print(
+                f"stopped: no workload {args.workload!r} here or in the bundled benchmark; "
+                "pass --tasks path/to/tasks.jsonl",
+                file=sys.stderr,
+            )
+            return 2
+        tasks_path = found
     tasks = load_tasks(tasks_path)
     if args.limit is not None:
         # Smoke runs: the first N tasks. The saved hash is still the full file's hash.
@@ -196,7 +207,9 @@ def cmd_spend(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    load_dotenv(ROOT / ".env")  # ANTHROPIC_API_KEY lives only in .env (gitignored)
+    env = find(".env")  # ANTHROPIC_API_KEY lives only in .env (gitignored)
+    if env is not None:
+        load_dotenv(env)
     parser = argparse.ArgumentParser(prog="costlab")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -234,29 +247,31 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="save the run even if some tasks got an API error (counted as failures)",
     )
-    run.add_argument("--db", default=str(DEFAULT_DB))
+    run.add_argument("--db", default=default_db())
     run.set_defaults(func=cmd_run)
 
     table = sub.add_parser("table", help="print the latest run per workload, strategy and model")
-    table.add_argument("--db", default=str(DEFAULT_DB))
+    table.add_argument("--db", default=default_db())
     table.add_argument("--json", action="store_true", help="machine-readable output")
     table.set_defaults(func=cmd_table)
 
     compare = sub.add_parser("compare", help="each strategy against the baseline, per workload")
-    compare.add_argument("--db", default=str(DEFAULT_DB))
+    compare.add_argument("--db", default=default_db())
     compare.add_argument("--json", action="store_true", help="machine-readable output")
     compare.set_defaults(func=cmd_compare)
 
     report = sub.add_parser("report", help="write results/RESULTS.md and charts from SQLite")
-    report.add_argument("--db", default=str(DEFAULT_DB))
-    report.add_argument("--out", default=str(ROOT / "results"))
+    report.add_argument("--db", default=default_db())
+    report.add_argument("--out", default=str(project_path("results")))
     report.set_defaults(func=cmd_report)
 
     rebuild = sub.add_parser(
         "rebuild", help="replay every reported run from the committed cache (no key, no cost)"
     )
-    rebuild.add_argument("--manifest", default=str(ROOT / "results" / "runs.json"))
-    rebuild.add_argument("--db", default=str(DEFAULT_DB))
+    rebuild.add_argument(
+        "--manifest", default=str(find("results/runs.json") or "results/runs.json")
+    )
+    rebuild.add_argument("--db", default=default_db())
     rebuild.set_defaults(func=cmd_rebuild)
 
     est = sub.add_parser("estimate", help="what a prompt would cost on each model, before sending")
@@ -277,7 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         "spend", help="what was actually paid, by day and model, from the cache (gate 5)"
     )
     spend.add_argument("--since", help="first UTC day to include, YYYY-MM-DD")
-    spend.add_argument("--cache", default=str(ROOT / "cache"))
+    spend.add_argument("--cache", default=str(project_path("cache")))
     spend.add_argument("--json", action="store_true", help="machine-readable output")
     spend.set_defaults(func=cmd_spend)
 

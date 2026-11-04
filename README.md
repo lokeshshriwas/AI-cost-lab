@@ -20,15 +20,19 @@ Full tables, charts, caveats and what didn't work: [results/RESULTS.md](results/
 
 ## Reproduce every number, free
 
-All 1,400+ real API answers are committed in `cache/`, so the results rebuild without an API
-key and without spending anything:
+All 1,400+ real API answers ship with the package (and are committed in `cache/`), so the
+results rebuild in any empty folder, without an API key and without spending anything:
 
 ```bash
-pip install -e ".[dev]"
-costlab rebuild      # replays all 42 reported runs from the cache into results/results.sqlite
+pip install ai-cost-lab-0.1.0-py3-none-any.whl   # or, in a clone: pip install -e ".[dev]"
+costlab rebuild      # replays all 42 reported runs into ./results/results.sqlite
 costlab compare      # each strategy against the baseline, per workload
-costlab report       # regenerates results/RESULTS.md and the charts
+costlab report       # writes ./results/RESULTS.md and the charts
 ```
+
+costlab reads from the folder you run it in first (your own `prices.yaml`, `workloads/`,
+`cache/`), then from the bundled benchmark; it writes only to that folder. Set `COSTLAB_HOME`
+to use another folder.
 
 ## Use it on your own prompts
 
@@ -42,6 +46,13 @@ costlab estimate prompt.txt --offline             # approximate, no API key need
 Running new benchmarks needs an API key in `.env` (copy `.env.example`). Paid calls are blocked
 unless `COSTLAB_ALLOW_PAID=1`, every answer is cached so nothing is paid for twice, and
 `costlab spend` totals what was actually paid, by day and model.
+
+## Building the package
+
+```bash
+python scripts/build_bundle.py               # copies prices, workloads, cache, run list into costlab/_bundle
+python -m pip wheel --no-deps . -w dist      # dist/ai_cost_lab-0.1.0-py3-none-any.whl (~0.9 MB)
+```
 
 ## Layout
 
