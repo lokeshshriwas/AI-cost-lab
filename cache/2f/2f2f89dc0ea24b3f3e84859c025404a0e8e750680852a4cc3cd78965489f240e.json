@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Tomas Herrera\", \"subject\": \"Bank transfer for INV-5520\", \"request\": \"payment\", \"deadline\": \"2026-05-15\", \"urgent\": false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 290,
+    "output_tokens": 68,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.677
+}

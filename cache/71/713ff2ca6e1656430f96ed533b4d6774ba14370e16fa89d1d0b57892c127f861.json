@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef word_lengths(words):\n    return {w: len(w) for w in words}\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 170,
+    "output_tokens": 31,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.018
+}

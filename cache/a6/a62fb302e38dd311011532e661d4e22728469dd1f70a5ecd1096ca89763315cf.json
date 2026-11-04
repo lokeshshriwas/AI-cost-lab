@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"OBM/2026/77\", \"vendor\": \"Otter Bay Marine Services\", \"issue_date\": \"2026-01-07\", \"due_date\": \"2026-02-06\", \"currency\": \"CAD\", \"subtotal\": 400.00, \"tax\": 52.00, \"total\": 452.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 409,
+    "output_tokens": 110,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.935
+}

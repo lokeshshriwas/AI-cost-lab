@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"PH-2026-0815\", \"vendor\": \"Pinecrest Hosting Inc.\", \"issue_date\": \"2026-08-01\", \"due_date\": \"2026-08-15\", \"currency\": \"USD\", \"subtotal\": 202.40, \"tax\": 0.00, \"total\": 202.40}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 405,
+    "output_tokens": 112,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 370.927,
+  "batch": true
+}

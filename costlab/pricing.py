@@ -25,18 +25,27 @@ class Usage:
 
 
 class PriceTable:
-    def __init__(self, models: dict[str, dict[str, float]]):
+    def __init__(self, models: dict[str, dict[str, float]], batch_multiplier: float | None = None):
         self._models = models
+        self.batch_multiplier = batch_multiplier
 
     @classmethod
     def load(cls, path: Path | str = DEFAULT_PRICES) -> PriceTable:
         data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-        return cls(data["models"])
+        return cls(data["models"], data.get("batch_multiplier"))
 
     def models(self) -> list[str]:
         return sorted(self._models)
 
-    def cost(self, model: str, usage: Usage) -> float:
+    def cost(self, model: str, usage: Usage, batch: bool = False) -> float:
+        dollars = self._standard_cost(model, usage)
+        if batch:
+            if self.batch_multiplier is None:
+                raise KeyError("No batch_multiplier in prices.yaml; cannot price a batch call")
+            dollars *= self.batch_multiplier
+        return dollars
+
+    def _standard_cost(self, model: str, usage: Usage) -> float:
         if model not in self._models:
             raise KeyError(f"No price for model {model!r}; add it to prices.yaml")
         rate = self._models[model]

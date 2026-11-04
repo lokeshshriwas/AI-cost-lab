@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef celsius_to_f(c):\n    return c * 9 / 5 + 32\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 171,
+    "output_tokens": 120,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.43
+}

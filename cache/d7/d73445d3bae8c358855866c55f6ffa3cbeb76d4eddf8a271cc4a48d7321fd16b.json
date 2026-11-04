@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Angela Brooks\", \"subject\": \"Water leak in unit 4B\", \"request\": \"other\", \"deadline\": null, \"urgent\": true}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 289,
+    "output_tokens": 132,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.842
+}

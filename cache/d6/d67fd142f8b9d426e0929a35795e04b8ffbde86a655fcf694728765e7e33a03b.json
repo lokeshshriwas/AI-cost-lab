@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"CS-5-2026\", \"vendor\": \"Cobalt Signage Ltd\", \"issue_date\": \"2026-02-25\", \"due_date\": \"2026-03-25\", \"currency\": \"GBP\", \"subtotal\": 2250.00, \"tax\": 450.00, \"total\": 2700.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 396,
+    "output_tokens": 112,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.359
+}

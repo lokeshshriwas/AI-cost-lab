@@ -4,7 +4,10 @@
 # counts, so a price change never needs a re-run.
 #
 # cache_write = 5-minute cache write.  cache_read = cache hit or refresh.
-# Batch API halves input and output; that is applied by the batch runner, not here.
+# Batch API: every token category costs batch_multiplier x the rates below
+# (50% off, per the Message Batches docs). Applied to calls marked as batch calls.
+
+batch_multiplier: 0.5
 
 models:
   claude-haiku-5-5:

@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"4471\", \"vendor\": \"BRAMBLE & CO.\", \"issue_date\": \"2026-10-05\", \"due_date\": \"2026-11-04\", \"currency\": \"EUR\", \"subtotal\": 3900.00, \"tax\": 0, \"total\": 3900.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 386,
+    "output_tokens": 104,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}

@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef apply_discount(price, percent):\n    return round(price * (1 - percent / 100), 2)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 161,
+    "output_tokens": 346,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.253
+}

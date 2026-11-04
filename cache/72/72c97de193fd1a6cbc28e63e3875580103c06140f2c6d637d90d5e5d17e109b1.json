@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"AR-5530\", \"vendor\": \"Northwind Print Co\", \"issue_date\": \"2026-10-01\", \"due_date\": \"2026-10-31\", \"currency\": \"USD\", \"subtotal\": 1015.00, \"tax\": 83.74, \"total\": 1098.74}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 371,
+    "output_tokens": 147,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.375
+}

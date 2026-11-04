@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Olivia Park\", \"subject\": \"Product recall notice for sensor kits\", \"request\": \"other\", \"deadline\": null, \"urgent\": true}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 297,
+    "output_tokens": 143,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.445
+}

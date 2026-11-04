@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"0045-B\", \"vendor\": \"Carrow & Finch Legal LLP\", \"issue_date\": \"2026-05-11\", \"due_date\": \"2026-06-10\", \"currency\": \"USD\", \"subtotal\": 3345.25, \"tax\": 0.00, \"total\": 3345.25}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 390,
+    "output_tokens": 110,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}

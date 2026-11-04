@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef median(nums):\n    s = sorted(nums)\n    n = len(s)\n    mid = n // 2\n    if n % 2 == 1:\n        return s[mid]\n    return (s[mid - 1] + s[mid]) / 2\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 180,
+    "output_tokens": 83,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.122
+}

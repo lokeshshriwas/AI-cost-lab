@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"TC-99120\", \"vendor\": \"Tandem Courier Services\", \"issue_date\": \"2026-09-28\", \"due_date\": null, \"currency\": \"USD\", \"subtotal\": 38.50, \"tax\": 0, \"total\": 38.50}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 365,
+    "output_tokens": 96,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.408
+}

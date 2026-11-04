@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "returns@oakridge.example",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 874,
+    "output_tokens": 11,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.059
+}

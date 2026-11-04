@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef invert_dict(d):\n    return {v: k for k, v in d.items()}\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 183,
+    "output_tokens": 33,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 0.918
+}

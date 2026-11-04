@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "3 to 5",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 20,
+    "output_tokens": 7,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 858
+  },
+  "latency_s": 1.017
+}

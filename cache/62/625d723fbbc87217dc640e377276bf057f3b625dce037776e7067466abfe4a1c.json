@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"INV-0007\", \"vendor\": \"Wren & Wick Candle Works\", \"issue_date\": \"2026-02-20\", \"due_date\": \"2026-03-06\", \"currency\": \"USD\", \"subtotal\": 230.00, \"tax\": 0.00, \"total\": 230.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 376,
+    "output_tokens": 107,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}

@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"20260612-7\", \"vendor\": \"Greenfield Dental Supplies\", \"issue_date\": \"2026-06-12\", \"due_date\": \"2026-07-12\", \"currency\": \"USD\", \"subtotal\": 88.10, \"tax\": 0, \"total\": 88.10}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 356,
+    "output_tokens": 105,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.104
+}

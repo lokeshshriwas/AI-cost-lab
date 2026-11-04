@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"RTP/26-27/0442\", \"vendor\": \"Ravi Textiles Pvt Ltd\", \"issue_date\": \"2026-09-09\", \"due_date\": \"2026-10-24\", \"currency\": \"INR\", \"subtotal\": 84000.00, \"tax\": 10080.00, \"total\": 94080.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 385,
+    "output_tokens": 213,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}

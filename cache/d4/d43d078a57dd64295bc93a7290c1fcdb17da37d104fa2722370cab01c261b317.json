@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef clamp(x, lo, hi):\n    if x < lo:\n        return lo\n    if x > hi:\n        return hi\n    return x\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 194,
+    "output_tokens": 50,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 308.14,
+  "batch": true
+}

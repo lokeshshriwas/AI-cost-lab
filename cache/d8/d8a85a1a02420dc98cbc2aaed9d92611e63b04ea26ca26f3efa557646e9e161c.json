@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef mean_positive(nums):\n    pos = [n for n in nums if n > 0]\n    if not pos:\n        return 0.0\n    return sum(pos) / len(pos)\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 200,
+    "output_tokens": 203,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.723
+}

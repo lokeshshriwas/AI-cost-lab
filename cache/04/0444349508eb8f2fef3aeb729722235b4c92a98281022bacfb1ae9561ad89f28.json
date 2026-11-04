@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"SF-2031-xA\", \"vendor\": \"Tidewater Freight GmbH\", \"issue_date\": \"2026-07-14\", \"due_date\": \"2026-08-13\", \"currency\": \"EUR\", \"subtotal\": 1240.00, \"tax\": 235.60, \"total\": 1475.60}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 399,
+    "output_tokens": 113,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.193
+}

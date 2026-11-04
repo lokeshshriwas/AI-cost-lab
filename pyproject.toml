@@ -22,7 +22,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["costlab"]
+packages = ["costlab", "costlab.graders", "costlab.strategies"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

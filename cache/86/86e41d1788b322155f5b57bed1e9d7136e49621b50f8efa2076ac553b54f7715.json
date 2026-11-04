@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Kwame Asante\", \"subject\": \"September retainer payment\", \"request\": \"payment\", \"deadline\": \"2026-09-30\", \"urgent\": false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 287,
+    "output_tokens": 61,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.218
+}

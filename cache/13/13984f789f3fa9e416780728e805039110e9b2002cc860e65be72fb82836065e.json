@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"3390\", \"vendor\": \"Bellwether Cloud Ltd\", \"issue_date\": \"2026-09-30\", \"due_date\": null, \"currency\": \"USD\", \"subtotal\": 499.00, \"tax\": 0, \"total\": 499.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 361,
+    "output_tokens": 155,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}

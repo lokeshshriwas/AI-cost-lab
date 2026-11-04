@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"INV 1190\", \"vendor\": \"Ember Fitness Co.\", \"issue_date\": \"2026-06-01\", \"due_date\": \"2026-06-16\", \"currency\": \"EUR\", \"subtotal\": 275.00, \"tax\": 52.25, \"total\": 327.25}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 363,
+    "output_tokens": 165,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.47
+}

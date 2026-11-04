@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef parse_pairs(text):\n    out = {}\n    for part in text.split(';'):\n        part = part.strip()\n        if part:\n            k, v = part.split('=')\n            out[k.strip()] = int(v.strip())\n    return out\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 220,
+    "output_tokens": 83,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.237
+}

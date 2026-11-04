@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Hiroshi Tanaka\", \"subject\": \"Speaker invitation for spring conference\", \"request\": \"other\", \"deadline\": \"2026-12-08\", \"urgent\": false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 302,
+    "output_tokens": 172,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 2.556
+}

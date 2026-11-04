@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "```python\ndef reverse_words(s):\n    return ' '.join(reversed(s.split()))\n```",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 172,
+    "output_tokens": 34,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.138
+}

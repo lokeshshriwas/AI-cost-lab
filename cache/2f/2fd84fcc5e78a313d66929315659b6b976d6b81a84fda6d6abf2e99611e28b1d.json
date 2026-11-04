@@ -1,0 +1,12 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"email\", \"sender\": \"Priya Raman\", \"subject\": \"Can we move Thursday's review?\", \"request\": \"meeting\", \"deadline\": \"2026-07-08\", \"urgent\": false}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 291,
+    "output_tokens": 66,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 1.271
+}

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="338" viewBox="0 0 760 338" role="img" aria-label="qa: cost per 1,000 successful tasks by strategy">
+<rect width="760" height="338" fill="#fcfcfb"/>
+<text x="16" y="26" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="16" font-weight="600" fill="#0b0b0b">qa: cost per 1,000 successful tasks</text>
+<text x="16" y="46" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">Lower is better. Pass rate after each value. Model: claude-haiku-5-5.</text>
+<text x="190.0" y="322" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#898781" text-anchor="middle">$0.0</text>
+<line x1="323.3" y1="58" x2="323.3" y2="304" stroke="#e1e0d9" stroke-width="1"/>
+<text x="323.3" y="322" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#898781" text-anchor="middle">$0.1</text>
+<line x1="456.7" y1="58" x2="456.7" y2="304" stroke="#e1e0d9" stroke-width="1"/>
+<text x="456.7" y="322" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#898781" text-anchor="middle">$0.2</text>
+<line x1="590.0" y1="58" x2="590.0" y2="304" stroke="#e1e0d9" stroke-width="1"/>
+<text x="590.0" y="322" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#898781" text-anchor="middle">$0.3</text>
+<path d="M190,64 H328.0 Q332.0,64 332.0,68.0 V78.0 Q332.0,82 328.0,82 H190 Z" fill="#898781"/>
+<text x="180" y="77" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end" font-weight="600">baseline</text>
+<text x="340.0" y="77" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.107 · 92% pass</text>
+<path d="M190,94 H200.1 Q204.1,94 204.1,98.0 V108.0 Q204.1,112 200.1,112 H190 Z" fill="#2a78d6"/>
+<text x="180" y="107" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">caching+low-effort+batch</text>
+<text x="212.1" y="107" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.011 · 94% pass</text>
+<path d="M190,124 H212.1 Q216.1,124 216.1,128.0 V138.0 Q216.1,142 212.1,142 H190 Z" fill="#2a78d6"/>
+<text x="180" y="137" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">prompt-caching</text>
+<text x="224.1" y="137" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.020 · 94% pass</text>
+<path d="M190,154 H213.1 Q217.1,154 217.1,158.0 V168.0 Q217.1,172 213.1,172 H190 Z" fill="#2a78d6"/>
+<text x="180" y="167" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">caching+low-effort</text>
+<text x="225.1" y="167" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.020 · 94% pass</text>
+<path d="M190,184 H263.0 Q267.0,184 267.0,188.0 V198.0 Q267.0,202 263.0,202 H190 Z" fill="#2a78d6"/>
+<text x="180" y="197" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">trim-context</text>
+<text x="275.0" y="197" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.058 · 92% pass</text>
+<path d="M190,214 H319.8 Q323.8,214 323.8,218.0 V228.0 Q323.8,232 319.8,232 H190 Z" fill="#2a78d6"/>
+<text x="180" y="227" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">low-effort</text>
+<text x="331.8" y="227" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.100 · 94% pass</text>
+<path d="M190,244 H328.0 Q332.0,244 332.0,248.0 V258.0 Q332.0,262 328.0,262 H190 Z" fill="#2a78d6"/>
+<text x="180" y="257" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">response-cache</text>
+<text x="340.0" y="257" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.107 · 92% pass</text>
+<path d="M190,274 H535.0 Q539.0,274 539.0,278.0 V288.0 Q539.0,292 535.0,292 H190 Z" fill="#2a78d6"/>
+<text x="180" y="287" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" fill="#0b0b0b" text-anchor="end">cascade</text>
+<text x="547.0" y="287" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12" fill="#52514e">$0.262 · 94% pass</text>
+<line x1="190" y1="58" x2="190" y2="304" stroke="#c3c2b7" stroke-width="1"/>
+</svg>

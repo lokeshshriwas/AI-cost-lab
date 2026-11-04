@@ -1,0 +1,13 @@
+{
+  "model": "claude-haiku-5-5",
+  "text": "{\"type\": \"invoice\", \"invoice_number\": \"7782\", \"vendor\": \"Harbor & Pine Catering\", \"issue_date\": \"2026-03-15\", \"due_date\": null, \"currency\": \"GBP\", \"subtotal\": 850.00, \"tax\": 170.00, \"total\": 1020.00}",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 371,
+    "output_tokens": 99,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "latency_s": 341.108,
+  "batch": true
+}
